@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TypeTrainer</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .modes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .mode-card {
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 12px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .mode-card:hover {
+      transform: translateY(-4px);
+    }
+    .mode-card h3 {
+      font-size: 20px;
+      margin: 10px 0;
+    }
+    .mode-card p {
+      font-size: 14px;
+      color: #666;
+    }
+    section {
+      margin-top: 60px;
+      padding: 30px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .button-main {
+      display: inline-block;
+      padding: 12px 24px;
+      margin-top: 20px;
+      background: #1a73e8;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+    }
+    .button-main:hover {
+      background: #155ab6;
+    }
+    nav a {
+      margin-left: 1.5rem;
+    }
+    .profile-btn {
+      padding: 8px 16px;
+      background: #1a73e8;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .profile-btn:hover {
+      background: #155ab6;
+    }
+    .hidden {
+      display: none;
+    }
+    .toggle-btn {
+      display: block;
+      margin-top: 10px;
+      color: #1a73e8;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .toggle-btn:hover {
+      color: #155ab6;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      10%, 90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+    #achievementPopup.show {
+      display: flex;
+      animation: fadeInOut 3s ease-in-out;
+    }
+    h4{
+      text-align: center;
+    }
+    p{text-align: center;}
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="icons/typing-svgrepo-com.svg" alt="TypeTrainer Logo" class="h-8 w-8 mr-2" />
+        <a class="text-2xl font-bold text-blue-600" href="index.html">TypeTrainer</a>
+      </div>
+      <nav class="flex items-center space-x-6">
+        <a href="#modes" class="text-gray-700 hover:text-blue-600 font-medium">Режимы</a>
+        <a href="#achievements" class="text-gray-700 hover:text-blue-600 font-medium">Достижения</a>
+        <a href="#leaderboard" class="text-gray-700 hover:text-blue-600 font-medium">Таблица рекордов</a>
+        <a href="#about" class="text-gray-700 hover:text-blue-600 font-medium">О нас</a>
+        <a href="#" id="profileBtn" class="profile-btn hidden"></a>
+        <a href="#auth" id="loginBtn" class="text-gray-700 hover:text-blue-600 font-medium">Вход</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="text-center py-20 bg-gradient-to-r from-blue-100 to-purple-100">
+      <h2 class="text-4xl font-bold mb-4 fade-in">Тренируй скорость и точность печати</h2>
+      <p class="text-lg text-gray-700 mb-8 fade-in" style="animation-delay: 0.2s">Выбирай режим, отслеживай прогресс и становись быстрее с каждым днём.</p>
+      <a href="#modes" class="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 transition fade-in" style="animation-delay: 0.4s">Начать тренировку</a>
+    </section>
+
+    <section id="modes">
+      <h2 class="text-3xl font-bold text-center text-blue-600 mb-10">Режимы</h2>
+      <div class="modes">
+        <div class="mode-card">
+          <img src="icons/document-svgrepo-com.svg" alt="Text Practice Icon" class="mx-auto h-12 mb-2" />
+          <h3>Text Practice</h3>
+          <p>Печатай тексты, отслеживай ошибки, скорость и точность</p>
+          <a href="modes/text/text-practice.html" class="button-main">Играть</a>
+        </div>
+        <div class="mode-card">
+          <img src="icons/water-wave-svgrepo-com.svg" alt="Words Mode Icon" class="mx-auto h-12 mb-2" />
+          <h3>Words Mode</h3>
+          <p>Тренируй скорость с помощью отдельных слов по волнам</p>
+          <a href="modes/game/words-mode.html" class="button-main">Играть</a>
+        </div>
+        <div class="mode-card">
+          <img src="icons/keyboard-svgrepo-com.svg" alt="Visual Keys Icon" class="mx-auto h-12 mb-2" />
+          <h3>Visual Keys</h3>
+          <p>Следи за клавишами, которые подсвечиваются для печати</p>
+          <a href="modes/keyboard-game/VisualKey.html" class="button-main">Играть</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="achievements" class="py-16 bg-gray-50">
+      <div class="max-w-6xl mx-auto px-4">
+        <h3 class="text-3xl font-bold text-blue-600 text-center mb-10">Достижения</h3>
+        <p class="text-gray-600 max-w-2xl mx-auto" style="margin-bottom: 40px; text-align: center;">
+          Коллекционируй достижения и соревнуйся с другими игроками!
+        </p>
+        <div class="grid gap-6 md:grid-cols-3">
+          <div class="bg-white p-6 rounded-xl shadow">
+            <img src="/icons/medal-gold.png" class="w-12 h-12 mx-auto d-block" style="margin-bottom: 20px;" alt="ach">
+            <h4 class="text-lg font-semibold">10 000 Символов</h4>
+            <p class="text-gray-600">Набери 10 000 символов.</p>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow">
+            <img src="/icons/speed.png" class="w-12 h-12 mx-auto d-block" style="margin-bottom: 20px;" alt="ach">
+            <h4 class="text-lg font-semibold">Скорость света</h4>
+            <p class="text-gray-600">Достигни 100 WPM.</p>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow">
+            <img src="/icons/accuracy.png" class="w-12 h-12 mx-auto d-block" style="margin-bottom: 20px;" alt="ach">
+            <h4 class="text-lg font-semibold">Безошибочный</h4>
+            <p class="text-gray-600">Пройди тренировку без единой ошибки.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="leaderboard" class="py-20 bg-gray-50 text-center">
+      <h2 class="text-3xl text-blue-600 font-bold mb-6">Таблица рекордов</h2>
+
+      <!-- Выбор режима -->
+      <div class="mb-6">
+        <label for="modeSelect" class="font-semibold">Выберите режим:</label>
+        <select id="modeSelect" class="ml-2 border rounded px-2 py-1">
+          <option value="text-practice">Text Practice</option>
+          <option value="Words-mode">Words Mode</option>
+          <option value="Visual-key">Visual Key</option>
+        </select>
+      </div>
+
+      <!-- Таблица -->
+      <div class="overflow-x-auto max-w-4xl mx-auto">
+        <table class="min-w-full bg-white shadow rounded-lg">
+          <thead>
+            <tr class="bg-blue-100 text-blue-800 text-left">
+              <th class="p-4">Пользователь</th>
+              <th class="p-4">Режим</th>
+              <th class="p-4">WPM / Счёт</th>
+              <th class="p-4">Точность / Волна</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody">
+            <!-- Здесь будут динамически подгружаться данные -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="auth" class="py-20 bg-white text-center">
+      <h2 id="authTitle" class="text-3xl font-bold mb-6">Авторизация</h2>
+      <form id="loginForm" class="max-w-md mx-auto space-y-4">
+        <input type="text" id="loginUsername" placeholder="Имя пользователя" class="w-full p-3 border rounded" />
+        <input type="password" id="loginPassword" placeholder="Пароль" class="w-full p-3 border rounded" />
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700">Войти</button>
+        <p id="toggleToRegister" class="toggle-btn">Нет аккаунта? Зарегистрироваться</p>
+      </form>
+      <form id="registerForm" class="max-w-md mx-auto space-y-4 hidden">
+        <input type="text" id="registerUsername" placeholder="Имя пользователя" class="w-full p-3 border rounded" />
+        <input type="password" id="registerPassword" placeholder="Пароль" class="w-full p-3 border rounded" />
+        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700">Зарегистрироваться</button>
+        <p id="toggleToLogin" class="toggle-btn">Уже есть аккаунт? Войти</p>
+      </form>
+    </section>
+
+    <div id="achievementPopup" class="fixed bottom-5 right-5 bg-white shadow-lg rounded-xl p-4 flex items-center gap-3 border border-green-400 hidden z-50">
+      <img id="achievementIcon" src="" class="w-10 h-10" alt="Achievement Icon">
+      <span id="achievementText" class="font-semibold text-gray-800"></span>
+    </div>
+
+    <section id="about" class="py-20 bg-white text-center">
+      <h2 class="text-3xl font-bold mb-4">О нас</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">
+        TypeTrainer — это платформа для улучшения навыков печати, разработанная с любовью. Наша цель — сделать обучение увлекательным и эффективным.
+      </p>
+    </section>
+  </main>
+
+  <footer class="bg-gray-100 py-6 text-center text-gray-600">
+    <p>© 2025 TypeTrainer. Все права защищены.</p>
+  </footer>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('registerUsername').value;
+      const password = document.getElementById('registerPassword').value;
+
+      const res = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      alert(data.message);
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const res = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert('Добро пожаловать, ' + username);
+        localStorage.setItem('username', username);
+        updateAuthState();
+      } else {
+        alert(data.message);
+      }
+    });
+
+    document.getElementById('toggleToRegister').addEventListener('click', () => {
+      document.getElementById('authTitle').textContent = 'Регистрация';
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('registerForm').classList.remove('hidden');
+    });
+
+    document.getElementById('toggleToLogin').addEventListener('click', () => {
+      document.getElementById('authTitle').textContent = 'Авторизация';
+      document.getElementById('registerForm').classList.add('hidden');
+      document.getElementById('loginForm').classList.remove('hidden');
+    });
+
+    function updateAuthState() {
+      const username = localStorage.getItem('username');
+      const authSection = document.getElementById('auth');
+      const loginBtn = document.getElementById('loginBtn');
+      const profileBtn = document.getElementById('profileBtn');
+
+      if (username) {
+        authSection.classList.add('hidden');
+        loginBtn.classList.add('hidden');
+        profileBtn.classList.remove('hidden');
+        profileBtn.textContent = `Профиль (${username})`;
+        profileBtn.href = 'profile.html';
+      } else {
+        authSection.classList.remove('hidden');
+        loginBtn.classList.remove('hidden');
+        profileBtn.classList.add('hidden');
+        document.getElementById('authTitle').textContent = 'Авторизация';
+        document.getElementById('loginForm').classList.remove('hidden');
+        document.getElementById('registerForm').classList.add('hidden');
+      }
+    }
+
+    window.onload = () => {
+      updateAuthState();
+      loadLeaderboard();
+    };
+
+    async function loadLeaderboard(mode = 'text-practice') {
+      const res = await fetch('http://localhost:3000/api/records');
+      const data = await res.json();
+      const tbody = document.getElementById('leaderboardBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+
+      const records = data[mode];
+      if (!records) return;
+
+      // Группируем по пользователям: username => bestRecord
+      const bestByUser = {};
+
+      records.forEach(record => {
+        const { username, ...rest } = record;
+
+        // Если ещё нет записи — просто устанавливаем
+        if (!bestByUser[username]) {
+          bestByUser[username] = record;
+        } else {
+          const currentBest = bestByUser[username];
+
+          // Сравниваем, что "лучше" в зависимости от режима
+          if (mode === 'text-practice') {
+            const newScore = record.wpm;
+            const bestScore = currentBest.wpm;
+            if (newScore > bestScore) bestByUser[username] = record;
+
+          } else if (mode === 'Words-mode') {
+            const newWave = record.wave || 0;
+            const bestWave = currentBest.wave || 0;
+            const newScore = record.score || 0;
+            const bestScore = currentBest.score || 0;
+
+            // Приоритет — волна, затем счёт
+            if (newWave > bestWave || (newWave === bestWave && newScore > bestScore)) {
+              bestByUser[username] = record;
+            }
+
+          } else if (mode === 'Visual-key') {
+            const newScore = record.kscore || 0;
+            const bestScore = currentBest.kscore || 0;
+            if (newScore > bestScore) bestByUser[username] = record;
+          }
+        }
+      });
+
+      // Преобразуем объект в массив и сортируем
+      const bestRecords = Object.values(bestByUser);
+
+      // Опционально: сортировка по убыванию (например, по скорости или счёту)
+      bestRecords.sort((a, b) => {
+        if (mode === 'text-practice') return b.wpm - a.wpm;
+        if (mode === 'Words-mode') return (b.wave - a.wave) || (b.score - a.score);
+        if (mode === 'Visual-key') return b.kscore - a.kscore;
+        return 0;
+      });
+
+      // Показываем максимум 10 записей
+      bestRecords.slice(0, 10).forEach(record => {
+        let row = `<tr class="border-t"><td class="p-4">${record.username}</td>`;
+
+        if (mode === 'text-practice') {
+          row += `<td class="p-4">Text Practice</td>
+                  <td class="p-4">${record.wpm}</td>
+                  <td class="p-4">${record.accuracy}%</td>`;
+        } else if (mode === 'Words-mode') {
+          row += `<td class="p-4">Words Mode</td>
+                  <td class="p-4">${record.score}</td>
+                  <td class="p-4">Волна ${record.wave}</td>`;
+        } else if (mode === 'Visual-key') {
+          row += `<td class="p-4">Visual Key</td>
+                  <td class="p-4">${record.kscore}</td>
+                  <td class="p-4">—</td>`;
+        }
+
+        row += '</tr>';
+        tbody.innerHTML += row;
+      });
+    }
+
+    // Обработчик выбора режима
+    document.getElementById('modeSelect').addEventListener('change', (e) => {
+      loadLeaderboard(e.target.value);
+    });
+  </script>

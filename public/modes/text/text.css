@@ -1,0 +1,45 @@
+.container {
+      max-width: 800px;
+      margin: auto;
+      padding: 40px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    #display-text {
+      font-size: 20px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    #display-text span.correct {
+      color: green;
+    }
+    #display-text span.incorrect {
+      background-color: #ffcccc;
+    }
+    #user-input {
+      width: 100%;
+      font-size: 20px;
+      padding: 10px;
+    }
+    #stats {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 100;
+    }
+    .popup button {
+      margin: 10px 5px 0;
+      padding: 8px 12px;
+      font-size: 16px;
+    }

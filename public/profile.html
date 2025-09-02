@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Профиль - TypeTrainer</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f0f0;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      } 
+    }
+    .profile-container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    .stat-card {
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .stat-card:hover {
+      transform: scale(1.02);
+      opacity: 0.95;
+    }
+    .button-main {
+      display: inline-block;
+      padding: 12px 24px;
+      margin-top: 20px;
+      background: #1a73e8;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+    }
+    .button-main:hover {
+      background: #155ab6;
+    }
+    .logout-btn {
+      padding: 10px;
+      height: 50px;
+      width: 80px;
+      margin-top: 20px;
+      background: #dc3545;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .logout-btn:hover {
+      background: #c82333;
+    }
+    nav a {
+      margin-left: 1.5rem;
+    } 
+    .profile-btn {
+      padding: 8px 16px;
+      background: #1a73e8;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .profile-btn:hover {
+      background: #155ab6;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="icons/typing-svgrepo-com.svg" alt="TypeTrainer Logo" class="h-8 w-8 mr-2" />
+        <a class="text-2xl font-bold text-blue-600" href="index.html">TypeTrainer</a>
+      </div>
+      <nav class="flex items-center space-x-6">
+        <a href="index.html#modes" class="text-gray-700 hover:text-blue-600 font-medium">Режимы</a>
+        <a href="index.html#achievements" class="text-gray-700 hover:text-blue-600 font-medium">Достижения</a>
+        <a href="index.html#leaderboard" class="text-gray-700 hover:text-blue-600 font-medium">Таблица рекордов</a>
+        <a href="index.html#about" class="text-gray-700 hover:text-blue-600 font-medium">О нас</a>
+        <a href="#" id="profileBtn" class="profile-btn">Профиль</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="profile-container">
+      <h1 class="text-3xl font-bold mb-4">Профиль пользователя</h1>
+      <div class="flex items-center space-x-4 mb-6">
+        <img src="https://www.gravatar.com/avatar/?d=mp" alt="Аватар" class="w-16 h-16 rounded-full border">
+        <div>
+          <p id="username" class="text-xl font-semibold">Имя пользователя</p>
+        </div>
+      </div>
+  
+      <div class="stat-card">
+        <p class="text-lg font-semibold mb-1">Общая статистика</p>
+        <div id="overallStats" class="flex flex-wrap gap-4 text-sm text-gray-700">
+          <!-- JS вставит сюда данные -->
+        </div>
+      </div>
+  
+      <h2 class="text-2xl font-semibold mt-8 mb-4">Достижения</h2>
+      <div id="achievementsContainer" class="grid grid-cols-3 gap-4">
+        <!-- Достижения будут вставлены динамически -->
+      </div>
+
+      <h2 class="text-2xl font-semibold mt-8 mb-4">История игр</h2>
+      <div id="gameHistoryContainer" class="overflow-x-auto">
+        <table class="min-w-full bg-white border rounded-lg text-sm text-left shadow">
+          <thead class="bg-gray-100 text-gray-700">
+            <tr>
+              <th class="px-4 py-2 border-b">Дата</th>
+              <th class="px-4 py-2 border-b">Режим</th>
+              <th class="px-4 py-2 border-b">Результаты</th>
+            </tr>
+          </thead>
+          <tbody id="gameHistoryBody" class="divide-y divide-gray-200">
+            <!-- История будет подставлена через JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="text-2xl font-semibold mt-6 mb-2">Личные Рекорды</h2>
+      <div id="stats" class="grid grid-cols-1 gap-4 mb-6">
+        <!-- Сюда скрипт вставит статистику -->
+      </div>
+  
+      <div class="mt-8 flex justify-between">
+        <a href="/index.html" class="button-main">Вернуться</a>
+        <button id="logoutBtn" class="logout-btn">Выйти</button>
+      </div>
+    </div>
+
+  <footer class="bg-gray-100 py-6 text-center text-gray-600">
+    <p>© 2025 TypeTrainer. Все права защищены.</p>
+  </footer>
+
+  <script>
+    const username = localStorage.getItem('username');
+    console.log('Текущий пользователь:', username);
+
+    if (!username) {
+      alert('Пожалуйста, войдите в аккаунт');
+      window.location.href = 'index.html';
+    }
+
+    document.getElementById('username').textContent = username;
+    const profileBtn = document.getElementById('profileBtn');
+    profileBtn.textContent = `Профиль (${username})`;
+
+    if (window.location.pathname.includes('profile')) {
+      profileBtn.classList.add('opacity-50', 'cursor-default', 'pointer-events-none');
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('username');
+      alert('Вы вышли из аккаунта');
+      window.location.href = 'index.html';
+    });
+
+
+    async function loadUserStats() {
+      const statsDiv = document.getElementById('stats');
+      try {
+        const res = await fetch(`http://localhost:3000/api/history?username=${username}`);
+        if (!res.ok) throw new Error('Ошибка при загрузке истории');
+
+        const data = await res.json();
+
+        const userStatsRes = await fetch(`http://localhost:3000/api/stats?username=${username}`);
+        if (!userStatsRes.ok) throw new Error('Ошибка при загрузке общей статистики');
+
+        const userStats = await userStatsRes.json();
+        console.log('Общая статистика:', userStats);
+
+        renderAchievements(data , userStats.totalTypedCharacters || 0);
+        let totalChars = 0;
+        let totalWpm = 0;
+        let totalAccuracy = 0;
+        let textPracticeCount = 0;
+        let sessionCount = data.length;
+
+        data.forEach(entry => {
+          const stats = entry.stats;
+          if (entry.mode === 'text-practice') {
+            totalChars += stats.chars;
+            totalWpm += stats.wpm;
+            totalAccuracy += stats.accuracy;
+            textPracticeCount++;
+          }
+        });
+
+        // Подсчёт средних:
+        const avgWpm = (totalWpm / textPracticeCount).toFixed(1);
+        const avgAccuracy = (totalAccuracy / textPracticeCount).toFixed(1);
+
+        document.getElementById('overallStats').innerHTML = `
+          <span><strong>Символов (всего):</strong> ${userStats.totalTypedCharacters || 0}</span>
+          <span><strong>Сессий:</strong> ${sessionCount}</span>
+          <span><strong>Ср. скорость:</strong> ${avgWpm} WPM</span>
+          <span><strong>Ср. точность:</strong> ${avgAccuracy}%</span>
+        `;
+
+        const best = {
+          text: { wpm: 0, accuracy: 0 },
+          words: { score: 0, wave: 0 },
+          visual: { score: 0 }
+        };
+
+        data.forEach(entry => {
+          const stats = entry.stats;
+          const mode = entry.mode;
+
+          if (mode === 'text-practice') {
+            if (stats.wpm > best.text.wpm) best.text.wpm = stats.wpm;
+            if (stats.accuracy > best.text.accuracy) best.text.accuracy = stats.accuracy;
+          }
+
+          if (mode === 'Words-mode') {
+            if (stats.score > best.words.score) best.words.score = stats.score;
+            if (stats.wave > best.words.wave) best.words.wave = stats.wave;
+          }
+
+          if (mode === 'Visual-key') {
+            if (stats.score > best.visual.score) best.visual.score = stats.score;
+          }
+        });
+
+        statsDiv.innerHTML = `
+          <div class="stat-card flex items-start gap-3">
+            <img src="icons/document-svgrepo-com.svg" alt="Text Practice" class="w-10 h-10 mt-1">
+            <div>
+              <p class="text-lg font-semibold">Text Practice</p>
+              <div class="flex flex-wrap gap-4 text-sm text-gray-700 mt-1">
+                <span><strong>Скорость:</strong> ${best.text.wpm || 0} WPM</span>
+                <span><strong>Точность:</strong> ${best.text.accuracy || 0}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card flex items-start gap-3">
+            <img src="icons/water-wave-svgrepo-com.svg" alt="Words Mode" class="w-10 h-10 mt-1">
+            <div>
+              <p class="text-lg font-semibold">Words Mode</p>
+              <div class="flex flex-wrap gap-4 text-sm text-gray-700 mt-1">
+                <span><strong>Очки:</strong> ${best.words.score}</span>
+                <span><strong>Волна:</strong> ${best.words.wave}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card flex items-start gap-3">
+            <img src="icons/keyboard-svgrepo-com.svg" alt="Visual Key" class="w-10 h-10 mt-1">
+            <div>
+              <p class="text-lg font-semibold">Visual Key</p>
+              <div class="flex flex-wrap gap-4 text-sm text-gray-700 mt-1">
+                <span><strong>Очки:</strong> ${best.visual.score}</span>
+              </div>
+            </div>
+          </div>
+          `;
+      } catch (error) {
+        console.error(error);
+        statsDiv.innerHTML = '<p class="text-red-600">Ошибка при загрузке статистики</p>';
+      }
+    }
+      async function loadGameHistory() {
+        const historyBody = document.getElementById('gameHistoryBody');
+        try {
+          const res = await fetch(`http://localhost:3000/api/history?username=${username}`);
+          if (!res.ok) throw new Error('Ошибка при получении истории игр');
+
+          let data = await res.json();
+
+          // Сортируем по убыванию даты и берём только 10 последних
+          data = data
+            .sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
+            .slice(0, 10);
+
+          if (data.length === 0) {
+            historyBody.innerHTML = '<tr><td colspan="3" class="px-4 py-2 text-gray-500">История пуста</td></tr>';
+            return;
+          }
+
+          data.forEach(entry => {
+            const date = new Date(entry.datetime).toLocaleString('ru-RU', {
+              dateStyle: 'short',
+              timeStyle: 'short'
+            });
+
+            const mode = entry.mode;
+            const stats = entry.stats;
+
+            let resultText = '';
+            if (mode === 'text-practice') {
+              resultText = `Скорость: ${stats.wpm} WPM, Точность: ${stats.accuracy}%, Ошибки: ${stats.errors}`;
+            } else if (mode === 'Words-mode') {
+              resultText = `Очки: ${stats.score}, Волна: ${stats.wave}`;
+            } else if (mode === 'Visual-key') {
+              resultText = `Очки: ${stats.kscore}`;
+            } else {
+              resultText = JSON.stringify(stats); // на случай новых режимов
+            }
+
+            historyBody.innerHTML += `
+              <tr class="hover:bg-gray-50 transition">
+                <td class="px-4 py-2 border-b">${date}</td>
+                <td class="px-4 py-2 border-b capitalize">${mode.replace('-', ' ')}</td>
+                <td class="px-4 py-2 border-b">${resultText}</td>
+              </tr>
+            `;
+          });
+        } catch (err) {
+          console.error(err);
+          historyBody.innerHTML = '<tr><td colspan="3" class="px-4 py-2 text-red-500">Ошибка загрузки истории</td></tr>';
+        }
+      }
+
+      function renderAchievements(data, totalCharsFromStats) {
+        const container = document.querySelector('#achievementsContainer');
+        if (!container) return;
+        const unlocked = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+
+        let bestWpm = 0;
+        let bestAccuracy = 0;
+        let bestScore = 0;
+        let bestKScore = 0;
+        let bestWave = 0;
+
+        data.forEach(entry => {
+          const stats = entry.stats;
+          if (entry.mode === 'text-practice' && stats.wpm && stats.accuracy) {
+            if (stats.wpm > bestWpm) bestWpm = stats.wpm;
+            if (stats.accuracy> bestAccuracy) bestAccuracy = stats.accuracy;
+          }else if(entry.mode === 'Words-mode' && stats.score && stats.wave){
+            if (stats.score > bestScore) bestScore = stats.score;
+            if (stats.wave > bestWave) bestWave = stats.wave;
+          }else{
+            if (stats.kscore > bestKScore) bestKScore = stats.kscore;
+          }
+        });
+
+        const achievements = [];
+
+        if (totalCharsFromStats >= 1000) achievements.push({ icon: 'medal-bronze.png', text: 'Первые 1000 символов', unlocked: true });
+        if (totalCharsFromStats >= 5000) achievements.push({ icon: 'medal-silver.png', text: '5000 символов', unlocked: true });
+        if (totalCharsFromStats >= 10000) achievements.push({ icon: 'medal-gold.png', text: '10000 символов', unlocked: true });
+        if (bestWpm >= 100) achievements.push({ icon: 'speed.svg', text: 'Скорость 100+', unlocked: true });
+        if (bestAccuracy === 100) achievements.push({ icon: 'accuracy.png', text: '100% точности', unlocked: true });
+        if (data.length >= 7) achievements.push({ icon: '7days.png', text: '7 тренировок', unlocked: true });
+        if (bestScore >= 300) achievements.push({ icon: 'fire.png', text: '300 очков', unlocked: true });
+        if (bestWave >= 8) achievements.push({icon: 'wave2.png', text: '8 волна достигнута' , unlocked: true});
+        if (bestKScore >= 300) achievements.push({icon: 'piano.png', text: '300 очков', unlocked: true});
+
+        console.log('Собрано достижений:', achievements);
+
+        const newUnlocked = [...unlocked];
+        const toDisplay = [];
+
+        achievements.forEach(a => {
+          if (a.condition) {
+            toDisplay.push(a);
+            if (!unlocked.includes(a.key)) {
+              showAchievementPopup(a.icon, a.text);
+              newUnlocked.push(a.key);
+            }
+          }
+        });
+
+        if (achievements.length === 0) {
+          container.innerHTML = '<p class="text-gray-400" style="width: 200px;">Достижений пока нет</p>';
+        } else {
+          container.innerHTML = achievements.map(a => `
+            <div class="flex flex-col items-center text-center ${a.unlocked ? '' : 'opacity-30'}">
+              <img src="/icons/${a.icon}" class="w-12 h-12 ${a.unlocked ? '' : 'grayscale'}" alt="ach">
+              <p class="text-sm mt-1">${a.text}</p>
+            </div>
+          `).join('');
+        }
+      }
+
+      function showAchievementPopup(icon, text) {
+        const popup = document.getElementById('achievementPopup');
+        const popupIcon = document.getElementById('achievementIcon');
+        const popupText = document.getElementById('achievementText');
+
+        popupIcon.src = `/img/${icon}`;
+        popupText.textContent = text;
+
+        popup.classList.add('show');
+        popup.classList.remove('hidden');
+
+        setTimeout(() => {
+          popup.classList.remove('show');
+          popup.classList.add('hidden');
+        }, 3000);
+    }
+
+      window.onload = () => {
+        loadUserStats();
+        loadGameHistory(); // добавляем вызов
+      };
+  </script>
+</body>
+</html>

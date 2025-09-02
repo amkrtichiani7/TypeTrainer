@@ -1,0 +1,129 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "1234"
+    },
+    {
+      "username": "SpeedTyper",
+      "password": "123"
+    },
+    {
+      "username": "TypingKing",
+      "password": "123"
+    }
+  ],
+  "records": [],
+  "gameHistory": [
+    {
+      "username": "TypingKing",
+      "mode": "text-practice",
+      "stats": {
+        "wpm": 55,
+        "accuracy": 100,
+        "errors": 1
+      },
+      "datetime": "2025-06-14T08:09:55.773Z"
+    },
+    {
+      "username": "SpeedTyper",
+      "mode": "text-practice",
+      "stats": {
+        "wpm": 55,
+        "accuracy": 100,
+        "errors": 1
+      },
+      "datetime": "2025-06-14T08:09:55.773Z"
+    },
+    {
+      "username": "TypingKing",
+      "mode": "Words-mode",
+      "stats": {
+        "score": 309,
+        "wave": 8
+      },
+      "datetime": "2025-06-14T11:01:20.816Z"
+    },
+    {
+      "username": "TypingKing",
+      "mode": "Words-mode",
+      "stats": {
+        "score": 349,
+        "wave": 8
+      },
+      "datetime": "2025-06-14T11:13:43.694Z"
+    },
+    {
+      "username": "TypingKing",
+      "mode": "text-practice",
+      "stats": {
+        "wpm": 50,
+        "accuracy": 100,
+        "errors": 0
+      },
+      "datetime": "2025-06-14T20:08:52.277Z"
+    },
+    {
+      "username": "TypingKing",
+      "mode": "Words-mode",
+      "stats": {
+        "score": 314,
+        "wave": 8
+      },
+      "datetime": "2025-06-15T07:32:11.027Z"
+    },
+    {
+      "username": "TypingKing",
+      "mode": "Words-mode",
+      "stats": {
+        "score": 345,
+        "wave": 8
+      },
+      "datetime": "2025-06-15T07:53:11.418Z"
+    },
+    {
+      "username": "TypingKing",
+      "mode": "text-practice",
+      "stats": {
+        "wpm": 58,
+        "accuracy": 100,
+        "errors": 0
+      },
+      "datetime": "2025-06-15T08:01:31.022Z"
+    },
+    {
+      "username": "TypingKing",
+      "mode": "text-practice",
+      "stats": {
+        "wpm": 51,
+        "accuracy": 100,
+        "errors": 1
+      },
+      "datetime": "2025-06-15T09:10:56.116Z"
+    },
+    {
+      "username": "TypingKing",
+      "mode": "text-practice",
+      "stats": {
+        "wpm": 52,
+        "accuracy": 100,
+        "errors": 0
+      },
+      "datetime": "2025-06-15T09:22:19.824Z"
+    },
+    {
+      "username": "TypingKing",
+      "mode": "Visual-key",
+      "stats": {
+        "kscore": 390
+      },
+      "datetime": "2025-06-15T10:22:21.103Z"
+    }
+  ],
+  "userStats": {
+    "TypingKing": {
+      "totalTypedCharacters": 5772,
+      "lastActive": "2025-06-16T07:36:40.288Z"
+    }
+  }
+}

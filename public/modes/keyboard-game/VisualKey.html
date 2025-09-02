@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Key Mode - TypeTrainer</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+      height: 100%;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .container {
+      flex: 1 0 auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .key {
+      width: 60px;
+      height: 60px;
+      background-color: #e2e8f0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+    .key.active {
+      background-color: #2563eb;
+      color: white;
+    }
+    .key.pressed {
+      background-color: #16a34a;
+      color: white;
+    }
+    .keyboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 10px;
+      max-width: 620px;
+      margin: 20px 0;
+    }
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    nav a {
+      margin-left: 1.5rem;
+      color: #666;
+      text-decoration: none;
+    }
+    nav a:hover {
+      color: #1a73e8;
+    }
+    .profile-btn {
+      padding: 8px 16px;
+      background: #1a73e8;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .profile-btn:hover {
+      background: #155ab6;
+    }
+    .hidden {
+      display: none;
+    }
+    footer {
+      flex-shrink: 0;
+      background-color: #f3f4f6;
+      padding: 10px 0;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      10%, 90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+    #achievementPopup.show {
+      display: flex;
+      animation: fadeInOut 3s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="../../icons/typing-svgrepo-com.svg" alt="TypeTrainer Logo" class="h-8 w-8 mr-2" />
+        <a class="text-2xl font-bold text-blue-600" href="../../index.html">TypeTrainer</a>
+      </div>
+      <nav class="flex items-center space-x-6">
+        <a href="../../index.html#modes" class="text-gray-700 hover:text-blue-600 font-medium">Режимы</a>
+        <a href="../../index.html#achievements" class="text-gray-700 hover:text-blue-600 font-medium">Достижения</a>
+        <a href="../../index.html#leaderboard" class="text-gray-700 hover:text-blue-600 font-medium">Таблица рекордов</a>
+        <a href="../../index.html#about" class="text-gray-700 hover:text-blue-600 font-medium">О нас</a>
+        <a href="#" id="profileBtn" class="profile-btn hidden"></a>
+        <a href="../../index.html#auth" id="loginBtn" class="text-gray-700 hover:text-blue-600 font-medium">Вход</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 flex flex-col justify-center items-center">
+    <div class="container fade-in" style="animation-delay: 0.2s">
+      <h1 class="text-3xl font-bold text-blue-600 mb-4">Visual Key Mode</h1>
+
+      <div class="keyboard flex flex-col items-center gap-2 mb-6" id="keyboard">
+        <!-- Клавиши вставятся через JS -->
+      </div>
+
+      <div class="text-center mt-2 mb-6">
+        <p id="score" class="text-lg">🎯 Score: 0</p>
+        <p id="timer" class="text-lg">⏱ Time: 60s</p>
+      </div>
+
+      <div id="popup" class="mt-6 hidden">
+        <p id="result" class="text-xl font-semibold text-green-600"></p>
+        <button onclick="startGame()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Играть снова</button>
+      </div>
+    </div>
+  </main>
+  <div id="layoutWarning" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded shadow-lg text-sm hidden z-50">
+    Включите английскую раскладку клавиатуры 🇬🇧
+  </div>
+
+  <div id="achievementPopup" class="fixed bottom-5 right-5 bg-white shadow-lg rounded-xl p-4 flex items-center gap-3 border border-green-400 hidden z-50">
+    <img id="achievementIcon" src="" class="w-10 h-10" alt="Achievement Icon">
+    <span id="achievementText" class="font-semibold text-gray-800"></span>
+  </div>
+
+  <footer class="bg-gray-100 py-6 text-center text-gray-600">
+    <p>© 2025 TypeTrainer. Все права защищены.</p>
+  </footer>
+
+  <script>
+    const keys = "abcdefghijklmnopqrstuvwxyz0123456789".split("");
+    const keyboard = document.getElementById("keyboard");
+    const scoreDisplay = document.getElementById("score");
+    const timerDisplay = document.getElementById("timer");
+    const popup = document.getElementById("popup");
+    const result = document.getElementById("result");
+    const username = localStorage.getItem('username');
+    const achievementQueue = [];
+
+    let activeKeys = new Set();
+    let pressedKeys = new Set();
+    let score = 0;
+    let timeLeft = 60;
+    let interval;
+    let gameActive = false;
+    let typedCharacters = 0;
+    let isPopupShowing = false;
+
+    function createKeyboard() {
+      keyboard.innerHTML = "";
+
+      const rows = [
+        "1234567890",
+        "qwertyuiop",
+        "asdfghjkl",
+        "zxcvbnm"
+      ];
+
+      rows.forEach(row => {
+        const rowEl = document.createElement("div");
+        rowEl.className = "keyboard-row";
+        row.split("").forEach(char => {
+          const keyEl = document.createElement("div");
+          keyEl.className = "key";
+          keyEl.textContent = char.toUpperCase();
+          keyEl.dataset.key = char;
+          keyEl.addEventListener("click", () => handleKey(char));
+          rowEl.appendChild(keyEl);
+        });
+        keyboard.appendChild(rowEl);
+      });
+    }
+
+    function handleKey(char) {
+      if (!gameActive) return;
+
+      const keyEl = document.querySelector(`[data-key="${char}"]`);
+      if (!keyEl) {
+        console.log(`Key not found: ${char}`); // Отладка
+        return;
+      }
+      if (activeKeys.has(char)) {
+        if (pressedKeys.has(char)) return;
+        pressedKeys.add(char);
+        score += 5;
+        keyEl.classList.add("pressed");
+        if (pressedKeys.size === activeKeys.size) {
+          setTimeout(generateActiveKeys, 300);
+        }
+      } else {
+        score = Math.max(0, score - 5);
+        keyEl.classList.add("bg-red-400");
+        setTimeout(() => keyEl.classList.remove("bg-red-400"), 300);
+      }
+      scoreDisplay.textContent = `🎯 Score: ${score}`;
+    }
+
+    function generateActiveKeys() {
+      activeKeys.clear();
+      pressedKeys.clear();
+      document.querySelectorAll(".key").forEach(k => k.classList.remove("active", "pressed"));
+      while (activeKeys.size < Math.floor(Math.random() * 2) + 3) {
+        const r = keys[Math.floor(Math.random() * keys.length)];
+        activeKeys.add(r);
+      }
+      activeKeys.forEach(k => {
+        const keyEl = document.querySelector(`[data-key="${k}"]`);
+        if (keyEl) keyEl.classList.add("active");
+      });
+    }
+
+    function startGame() {
+      score = 0;
+      timeLeft = 60;
+      gameActive = true;
+      let typedCharacters = 0;
+      popup.classList.add("hidden");
+      scoreDisplay.textContent = `🎯 Score: ${score}`;
+      timerDisplay.textContent = `⏱ Time: ${timeLeft}s`;
+      generateActiveKeys();
+      clearInterval(interval);
+      interval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `⏱ Time: ${timeLeft}s`;
+        if (timeLeft <= 0) endGame();
+      }, 1000);
+      window.focus();
+    }
+
+    function endGame() {
+      clearInterval(interval);
+      gameActive = false;
+      popup.classList.remove("hidden");
+      result.textContent = `Ваш финальный счёт: ${score}`;
+      saveGameHistory(score);
+      handleStatsAndAchievements(score);
+    }
+
+    document.addEventListener("keydown", e => {
+      if (!gameActive) return;
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+        typedCharacters++;
+      }
+      const char = e.key.toLowerCase();
+
+      if (!keys.includes(char)) {
+        showLayoutWarning(); // Показываем предупреждение
+        return;
+      }
+
+      handleKey(char);
+    });
+
+    window.onload = () => {
+      createKeyboard();
+      const username = localStorage.getItem('username');
+      if (username) {
+        document.getElementById('loginBtn').classList.add('hidden');
+        document.getElementById('profileBtn').classList.remove('hidden');
+        document.getElementById('profileBtn').textContent = `Профиль (${username})`;
+        document.getElementById('profileBtn').href = '../../profile.html';
+      }
+      startGame();
+    };
+    const layoutWarning = document.getElementById("layoutWarning");
+    let warningTimeout;
+
+    function showLayoutWarning() {
+      layoutWarning.classList.remove("hidden");
+      clearTimeout(warningTimeout);
+      warningTimeout = setTimeout(() => {
+        layoutWarning.classList.add("hidden");
+      }, 2000);
+    }
+
+    function saveGameHistory(kscore) {
+      if (!username) return;
+      console.log('Saving stats:', username,kscore);
+      const data = {
+        username,
+        mode: "Visual-key",
+        datetime: new Date().toISOString(),
+        stats: {
+          kscore
+        }
+      };
+
+      fetch('http://localhost:3000/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(res => {
+        if (!res.ok) throw new Error("Ошибка при сохранении истории");
+        return res.json();
+      }).then(data => {
+        console.log("История игры сохранена:", data);
+      }).catch(err => console.error(err));
+    }
+
+    async function fetchAndCheckAchievements(score) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/stats?username=${username}`);
+        const stats = await res.json();
+        const totalChars = stats.totalTypedCharacters || 0;
+
+        const unlocked = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+        const newUnlocked = [...unlocked];
+
+        const achievements = [];
+
+        if (totalChars >= 1000 && !unlocked.includes('1000chars')) {
+          achievements.push({ key: '1000chars', icon: 'medal-bronze.png', text: 'Первые 1000 символов' });
+        }
+        if (totalChars >= 5000 && !unlocked.includes('5000chars')) {
+          achievements.push({ key: '5000chars', icon: 'medal-silver.png', text: '5000 символов' });
+        }
+        if (totalChars >= 10000 && !unlocked.includes('10000chars')) {
+          achievements.push({ key: '10000chars', icon: 'medal-gold.png', text: '10000 символов' });
+        }
+        if (score >= 300 && !unlocked.includes('300score')) {
+          achievements.push({ key: '300score', icon: 'piano.png', text: '300 очков' });
+        }
+
+        achievements.forEach(a => {
+          queueAchievement(a.icon, a.text);
+          newUnlocked.push(a.key);
+        });
+
+        if (achievements.length > 0) {
+          localStorage.setItem('unlockedAchievements', JSON.stringify(newUnlocked));
+        }
+      } catch (err) {
+        console.error('Ошибка при получении статистики:', err);
+      }
+    }
+    function processAchievementQueue() {
+      if (achievementQueue.length === 0) {
+        isPopupShowing = false;
+        return;
+      }
+
+      isPopupShowing = true;
+      const { icon, text } = achievementQueue.shift();
+
+      const popup = document.getElementById('achievementPopup');
+      const popupIcon = document.getElementById('achievementIcon');
+      const popupText = document.getElementById('achievementText');
+
+      if (!popup || !popupIcon || !popupText) return;
+
+      popupIcon.src = `/icons/${icon}`;
+      popupText.textContent = text;
+
+      popup.classList.remove('hidden');
+      popup.classList.add('show');
+
+      setTimeout(() => {
+        popup.classList.remove('show');
+        popup.classList.add('hidden');
+
+        setTimeout(processAchievementQueue, 500); // задержка перед следующим
+      }, 3000);
+    }
+
+    function queueAchievement(icon, text) {
+      achievementQueue.push({ icon, text });
+      if (!isPopupShowing) {
+        processAchievementQueue();
+      }
+    }
+    async function handleStatsAndAchievements(score) {
+      if (username && typedCharacters > 0) {
+        console.log("Typed characters:" + typedCharacters);
+        try {
+          // Ждём, пока сервер обновит статистику
+          await fetch('/api/stats/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username,
+              typedCharacters
+            })
+          });
+
+          // Только после обновления — проверяем достижения
+          await fetchAndCheckAchievements(score);
+        } catch (err) {
+          console.error('Ошибка при обновлении статистики:', err);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Practice - TypeTrainer</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+      height: 100%;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f0f0;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .container {
+      max-width: 600px;
+      min-height: 700px;
+      margin: 40px auto;
+      padding: 80px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      flex: 1 0 auto;
+    }
+    #display-text {
+      font-size: 20px;
+      line-height: 1.5;
+      margin-top: 60px;
+      margin-bottom: 60px;
+    }
+    #display-text span.correct {
+      color: green;
+    }
+    #display-text span.incorrect {
+      background-color: #ffcccc;
+    }
+    #display-text span.current {
+      color: #ffcc00; /* Жёлтый цвет для текущего символа */
+    }
+    #user-input {
+      opacity: 0;
+      position: absolute;
+      z-index: -1;
+      width: 1px;
+      height: 1px;
+    }
+    #stats {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #666;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+    }
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 100;
+      text-align: center;
+    }
+    .popup button {
+      margin: 10px 5px 0;
+      padding: 8px 12px;
+      font-size: 16px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .popup button:hover {
+      background: #155ab6;
+    }
+    nav a {
+      margin-left: 1.5rem;
+      color: #666;
+      text-decoration: none;
+    }
+    nav a:hover {
+      color: #1a73e8;
+    }
+    .profile-btn {
+      padding: 8px 16px;
+      background: #1a73e8;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .profile-btn:hover {
+      background: #155ab6;
+    }
+    .hidden {
+      display: none;
+    }
+    footer {
+      flex-shrink: 0;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      10%, 90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+    #achievementPopup.show {
+      display: flex;
+      animation: fadeInOut 3s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="../../icons/typing-svgrepo-com.svg" alt="TypeTrainer Logo" class="h-8 w-8 mr-2" />
+        <a class="text-2xl font-bold text-blue-600" href="../../index.html">TypeTrainer</a>
+      </div>
+      <nav class="flex items-center space-x-6">
+        <a href="../../index.html#modes" class="text-gray-700 hover:text-blue-600 font-medium">Режимы</a>
+        <a href="../../index.html#achievements" class="text-gray-700 hover:text-blue-600 font-medium">Достижения</a>
+        <a href="../../index.html#leaderboard" class="text-gray-700 hover:text-blue-600 font-medium">Таблица рекордов</a>
+        <a href="../../index.html#about" class="text-gray-700 hover:text-blue-600 font-medium">О нас</a>
+        <a href="#" id="profileBtn" class="profile-btn hidden"></a>
+        <a href="../../index.html#auth" id="loginBtn" class="text-gray-700 hover:text-blue-600 font-medium">Вход</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container fade-in" style="animation-delay: 0.2s">
+      <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">📄 Text Practice</h1>
+      <p id="display-text"></p>
+      <input type="text" id="user-input" autofocus autocomplete="off"/>
+      <div id="stats"></div>
+    </div>
+
+    <div id="popup" class="popup hidden">
+      <p id="result"></p>
+      <button onclick="location.reload()">🔁 Start Again</button>
+      <button onclick="window.location.href='../../index.html'">🏠 Main Menu</button>
+    </div>
+  </main>
+
+  <div id="achievementPopup" class="fixed bottom-5 right-5 bg-white shadow-lg rounded-xl p-4 flex items-center gap-3 border border-green-400 hidden z-50">
+    <img id="achievementIcon" src="" class="w-10 h-10" alt="Achievement Icon">
+    <span id="achievementText" class="font-semibold text-gray-800"></span>
+  </div>
+
+  <footer class="bg-gray-100 py-6 text-center text-gray-600">
+    <p>© 2025 TypeTrainer. Все права защищены.</p>
+  </footer>
+
+  <script>
+    let currentText = "";
+    let startTime;
+    let gameEnded = false;
+    let timerInterval;
+    let allowedIndex = 0;
+    let timeLimit = 60;
+    let audio = new Audio("buttonPress.mp3"); // Звуковой файл для печатной машинки
+    let typedCharacters = 0;
+    let isPopupShowing = false;
+
+    const display = document.getElementById("display-text");
+    const input = document.getElementById("user-input");
+    const stats = document.getElementById("stats");
+    const popup = document.getElementById("popup");
+    const result = document.getElementById("result");
+    const loginBtn = document.getElementById("loginBtn");
+    const profileBtn = document.getElementById("profileBtn");
+    const username = localStorage.getItem('username');
+    const achievementQueue = [];
+
+    // Загрузка текстов из JSON
+    async function loadTexts() {
+      try {
+        const response = await fetch("./texts.json");
+        const texts = await response.json();
+        return texts;
+      } catch (error) {
+        console.error("Ошибка загрузки текстов:", error);
+        return [
+          "The old forest stood tall and silent, its ancient trees stretching toward the sky. Birds chirped softly in the early morning light, while a gentle breeze rustled the leaves. A small stream wound its way through the undergrowth, reflecting the golden rays of the sun. The air was filled with the scent of pine and earth, creating a peaceful atmosphere. Every step on the mossy ground felt like a journey back in time.",
+          "In the heart of the bustling city, a small café offered a quiet escape. People hurried past its windows, lost in their daily routines, while inside, the aroma of freshly brewed coffee filled the air. The barista smiled warmly as she prepared each order with care. Soft music played in the background, blending with the murmur of conversations. It was a place where time seemed to slow down, even for just a moment."
+        ];
+      }
+    }
+
+    function startGame() {
+      loadTexts().then(texts => {
+        currentText = texts[Math.floor(Math.random() * texts.length)];
+        display.textContent = currentText;
+        input.value = "";
+        allowedIndex = 0;
+        typedCharacters = 0;
+        gameEnded = false;
+        input.disabled = false;
+        startTime = Date.now();
+        clearInterval(timerInterval);
+        timerInterval = setInterval(updateStats, 1000);
+        input.focus();
+        updateDisplay();
+      });
+    }
+
+    function updateDisplay() {
+      display.innerHTML = "";
+      const typed = input.value;
+      for (let i = 0; i < currentText.length; i++) {
+        const span = document.createElement("span");
+        span.textContent = currentText[i];
+        if (i < typed.length) {
+          span.className = typed[i] === currentText[i] ? "correct" : "incorrect";
+        } else if (i === typed.length) {
+          span.className = "current"; // Текущий символ выделяем жёлтым
+        }
+        display.appendChild(span);
+      }
+    }
+
+    function calculateStats() {
+      const typed = input.value;
+      const correctChars = typed.split('').filter((char, i) => char === currentText[i]).length;
+      const errors = typed.length - correctChars;
+      const accuracy = Math.round((correctChars / typed.length) * 100) || 0;
+      const wpm = Math.round((typed.length / 5) / ((Date.now() - startTime) / 60000));
+      const remaining = timeLimit - Math.floor((Date.now() - startTime) / 1000);
+      return { remaining, errors, accuracy, wpm };
+    }
+
+    function updateStats() {
+      const { remaining, errors, accuracy, wpm } = calculateStats();
+      stats.innerHTML = `⏱ Time left: ${remaining}s 📏 WPM: ${wpm} 🎯 Accuracy: ${accuracy}% ❌ Errors: ${errors}`;
+      if (remaining <= 0) endGame();
+    }
+
+    function showPopup() {
+      const { errors, accuracy, wpm } = calculateStats();
+      result.innerHTML = `✅ <b>WPM:</b> ${wpm} <br>❌ <b>Errors:</b> ${errors} <br>🎯 <b>Accuracy:</b> ${accuracy}%`;
+      popup.classList.remove("hidden");
+    }
+
+    function endGame() {
+      if (gameEnded) return;
+      gameEnded = true;
+      clearInterval(timerInterval);
+      input.disabled = true;
+      showPopup();
+      const { wpm, accuracy, errors } = calculateStats();
+      saveGameHistory(wpm, accuracy, errors);
+      handleStatsAndAchievements(wpm, accuracy, errors);
+    }
+
+    // Возвращаем фокус при клике вне поля, если игра активна
+    document.addEventListener("click", (e) => {
+      if (!gameEnded && document.activeElement !== input) {
+        input.focus();
+      }
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (!startTime) {
+        startTime = Date.now();
+      }
+
+      const value = input.value;
+
+      if (e.key === "Backspace" && value.lastIndexOf(" ") < allowedIndex - 1) {
+        e.preventDefault();
+      }
+
+      if (e.key === " " && value.length >= allowedIndex) {
+        allowedIndex = value.length + 1;
+      }
+
+      if (value.length >= currentText.length && !gameEnded) {
+        endGame();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+        typedCharacters++;
+      }
+    });
+
+    input.addEventListener("input", (e) => {
+      updateDisplay();
+      // Воспроизведение звука при вводе каждой буквы
+      if (e.data && !gameEnded) {
+        audio.currentTime = 0; // Сбрасываем время до начала
+        audio.play().catch(error => console.log("Ошибка воспроизведения звука:", error));
+      }
+    });
+
+    function saveGameHistory(wpm, accuracy, errors) {
+      if (!username) return;
+      console.log('Saving stats:', username,wpm, accuracy, errors);
+      const data = {
+        username,
+        mode: "text-practice",
+        datetime: new Date().toISOString(),
+        stats: {
+          wpm,
+          accuracy,
+          errors
+        }
+      };
+
+      fetch('http://localhost:3000/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(res => {
+        if (!res.ok) throw new Error("Ошибка при сохранении истории");
+        return res.json();
+      }).then(data => {
+        console.log("История игры сохранена:", data);
+      }).catch(err => console.error(err));
+    }
+
+    async function fetchAndCheckAchievements(wpm, accuracy, errors) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/stats?username=${username}`);
+        const stats = await res.json();
+        const totalChars = (stats.totalTypedCharacters || 0) + typedCharacters;
+
+        console.log("total chars" +  totalChars)
+
+        const unlocked = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+        const newUnlocked = [...unlocked];
+
+        const achievements = [];
+
+        if (totalChars >= 1000 && !unlocked.includes('1000chars')) {
+          achievements.push({ key: '1000chars', icon: 'medal-bronze.png', text: 'Первые 1000 символов' });
+        }
+        if (totalChars >= 5000 && !unlocked.includes('5000chars')) {
+          achievements.push({ key: '5000chars', icon: 'medal-silver.png', text: '5000 символов' });
+        }
+        if (totalChars >= 10000 && !unlocked.includes('10000chars')) {
+          achievements.push({ key: '10000chars', icon: 'medal-gold.png', text: '10000 символов' });
+        }
+
+        if (accuracy === 100 && !unlocked.includes('accuracy100')) {
+          achievements.push({ key: 'accuracy100', icon: 'accuracy.png', text: '100% точности' });
+        }
+
+        if (wpm >= 300 && !unlocked.includes('speed300')) {
+          achievements.push({ key: 'speed300', icon: 'speed.png', text: 'Скорость 300+' });
+        }
+
+        achievements.forEach(a => {
+          queueAchievement(a.icon, a.text);
+          newUnlocked.push(a.key);
+        });
+
+        if (achievements.length > 0) {
+          localStorage.setItem('unlockedAchievements', JSON.stringify(newUnlocked));
+        }
+      } catch (err) {
+        console.error('Ошибка при получении статистики:', err);
+      }
+    }
+
+    function processAchievementQueue() {
+      if (achievementQueue.length === 0) {
+        isPopupShowing = false;
+        return;
+      }
+
+      isPopupShowing = true;
+      const { icon, text } = achievementQueue.shift();
+
+      const popup = document.getElementById('achievementPopup');
+      const popupIcon = document.getElementById('achievementIcon');
+      const popupText = document.getElementById('achievementText');
+
+      if (!popup || !popupIcon || !popupText) return;
+
+      popupIcon.src = `/icons/${icon}`;
+      popupText.textContent = text;
+
+      popup.classList.remove('hidden');
+      popup.classList.add('show');
+
+      setTimeout(() => {
+        popup.classList.remove('show');
+        popup.classList.add('hidden');
+
+        setTimeout(processAchievementQueue, 500); // задержка перед следующим
+      }, 3000);
+    }
+
+    function queueAchievement(icon, text) {
+      achievementQueue.push({ icon, text });
+      if (!isPopupShowing) {
+        processAchievementQueue();
+      }
+    }
+
+    async function handleStatsAndAchievements(wpm, accuracy, errors) {
+      if (username && typedCharacters > 0) {
+        console.log("Typed characters:" + typedCharacters);
+        try {
+          // Ждём, пока сервер обновит статистику
+          await fetch('/api/stats/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username,
+              typedCharacters
+            })
+          });
+
+          // Только после обновления — проверяем достижения
+          await fetchAndCheckAchievements(wpm, accuracy, errors);
+        } catch (err) {
+          console.error('Ошибка при обновлении статистики:', err);
+        }
+      }
+    }
+
+    // Проверка авторизации и старт игры при загрузке страницы
+    window.onload = () => {
+      const username = localStorage.getItem('username');
+      if (username) {
+        loginBtn.classList.add('hidden');
+        profileBtn.classList.remove('hidden');
+        profileBtn.textContent = `Профиль (${username})`;
+        profileBtn.href = '../../profile.html';
+      }
+      startGame();
+    };
+  </script>
+</body>
+</html>

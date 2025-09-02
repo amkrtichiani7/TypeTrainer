@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Words Mode - TypeTrainer</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+      height: 100%;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f0f0;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .container {
+      max-width: 600px;
+      min-height: 700px;
+      margin: 40px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      flex: 1 0 auto;
+    }
+    #word {
+      font-size: 40px;
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+    #input {
+      font-size: 24px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 60%;
+      margin-top: 30px;
+      margin-bottom: 40px;
+    }
+    #wave, #score, #game-timer, #bonus-indicator {
+      font-size: 18px;
+      color: #666;
+      margin: 5px 0;
+    }
+    #bonus-indicator {
+      color: #ff5500;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .bonus-pop {
+      transform: scale(1.2);
+    }
+    #wave-banner {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 48px;
+      color: #00aaff;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.4s, transform 0.4s;
+      pointer-events: none;
+      z-index: 999;
+      text-align: center;
+      width: 100%;
+    }
+    #timer-bar-container, #progress-bar-container {
+      width: 80%;
+      height: 20px;
+      background-color: #ddd;
+      margin: 10px auto;
+      margin-bottom: 40px;
+      margin-top: 20px;
+      overflow: hidden;
+      border-radius: 5px;
+    }
+    #timer-bar, #progress-bar {
+      height: 100%;
+      transition: width linear;
+    }
+    #timer-bar {
+      background-color: #00aaff;
+    }
+    #progress-bar {
+      background-color: #28a745;
+      transition: width 0.3s ease;
+    }
+    #timer-label, #progress-label {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    #flash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgb(255, 174, 0) 0%, rgba(255, 255, 255, 0) 70%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1000;
+      transition: opacity 0.9s ease-out;
+    }
+    .typing-text {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid #00aaff;
+      animation: blink-caret 0.7s step-end infinite;
+    }
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: #00aaff; }
+    }
+    #end-screen {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+    }
+    #end-screen.hidden {
+      display: none;
+    }
+    #end-screen button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background-color: #1a73e8;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #end-screen button:hover {
+      background-color: #155ab6;
+    }
+    nav a {
+      margin-left: 1.5rem;
+      color: #666;
+      text-decoration: none;
+    }
+    nav a:hover {
+      color: #1a73e8;
+    }
+    .profile-btn {
+      padding: 8px 16px;
+      background: #1a73e8;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .profile-btn:hover {
+      background: #155ab6;
+    }
+    .hidden {
+      display: none;
+    }
+    footer {
+      flex-shrink: 0;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      10%, 90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+    #achievementPopup.show {
+      display: flex;
+      animation: fadeInOut 3s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="../../icons/typing-svgrepo-com.svg" alt="TypeTrainer Logo" class="h-8 w-8 mr-2" />
+        <a class="text-2xl font-bold text-blue-600" href="../../index.html">TypeTrainer</a>
+      </div>
+      <nav class="flex items-center space-x-6">
+        <a href="../../index.html#modes" class="text-gray-700 hover:text-blue-600 font-medium">Режимы</a>
+        <a href="../../index.html#achievements" class="text-gray-700 hover:text-blue-600 font-medium">Достижения</a>
+        <a href="../../index.html#leaderboard" class="text-gray-700 hover:text-blue-600 font-medium">Таблица рекордов</a>
+        <a href="../../index.html#about" class="text-gray-700 hover:text-blue-600 font-medium">О нас</a>
+        <a href="#" id="profileBtn" class="profile-btn hidden"></a>
+        <a href="../../index.html#auth" id="loginBtn" class="text-gray-700 hover:text-blue-600 font-medium">Вход</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container fade-in" style="animation-delay: 0.2s">
+      <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">🌊 Words Mode</h1>
+      <div id="progress-label" class="text-center">До следующей волны</div>
+      <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+      </div>
+      <div id="timer-label" class="text-center">Таймер</div>
+      <div id="timer-bar-container">
+        <div id="timer-bar"></div>
+      </div>
+      <h1 id="word">word</h1>
+      <input type="text" id="input" autofocus autocomplete="off"/>
+      <p id="wave">Wave: 1</p>
+      <p>Score: <span id="score">0</span></p>
+      <p id="bonus-indicator"></p>
+      <p>Time Left: <span id="game-timer">3:00</span></p>
+    </div>
+    <div id="wave-banner"></div>
+    <div id="flash"></div>
+    <div id="end-screen" class="hidden">
+      <h2 class="text-2xl font-bold">⏱ Игра окончена!</h2>
+      <p>Ваш счёт: <span id="final-score">0</span></p>
+      <p>Волна: <span id="final-wave">0</span></p>
+      <button onclick="restartGame()">🔁 Заново</button>
+      <button onclick="goToMain()">🏠 На главную</button>
+    </div>
+  </main>
+
+  <div id="achievementPopup" class="fixed bottom-5 right-5 bg-white shadow-lg rounded-xl p-4 flex items-center gap-3 border border-green-400 hidden z-50">
+    <img id="achievementIcon" src="" class="w-10 h-10" alt="Achievement Icon">
+    <span id="achievementText" class="font-semibold text-gray-800"></span>
+  </div>
+
+  <footer class="bg-gray-100 py-6 text-center text-gray-600">
+    <p>© 2025 TypeTrainer. Все права защищены.</p>
+  </footer>
+
+  <script>
+    // Расширенный список слов
+    const words = [
+      "hi", "go", "up", "do", "an", "it",
+      "dog", "cat", "sun", "sky", "hat", "pen",
+      "home", "ball", "code", "lamp", "fork", "milk",
+      "apple", "chair", "table", "grape", "plant", "mouse",
+      "banana", "monkey", "rocket", "school", "window", "pencil",
+      "speaker", "glasses", "picture", "battery", "holiday", "machine",
+      "elephant", "mountain", "umbrella", "treasure", "hospital",
+      "developer", "algorithm", "education", "technology", "framework"
+    ];
+
+    words.sort((a, b) => a.length - b.length);
+    const lengthIndexMap = new Map();
+    for (let i = 0; i < words.length; i++) {
+      const len = words[i].length;
+      if (!lengthIndexMap.has(len)) {
+        lengthIndexMap.set(len, { start: i, end: i });
+      } else {
+        lengthIndexMap.get(len).end = i;
+      }
+    }
+
+    let currentWord = "";
+    let score = 0;
+    let wave = 1;
+    let wordTimer = null;
+    let timeLimit = 5000;
+    let wordsThisWave = 0;
+    let wordsRequired = 5;
+    let inARow = 0;
+    let lastBonusLevel = 1;
+    let gameTime = 180; // 3 минуты в секундах
+    let gameDuration = 180 * 1000; // 3 минуты
+    let gameTimeout;
+    let gameInterval;
+    let gameEnded = false;
+    let typedCharacters = 0;
+    let isPopupShowing = false;
+
+    const wordElement = document.getElementById("word");
+    const input = document.getElementById("input");
+    const scoreElement = document.getElementById("score");
+    const waveElement = document.getElementById("wave");
+    const timerBar = document.getElementById("timer-bar");
+    const progressBar = document.getElementById("progress-bar");
+    const bonusIndicator = document.getElementById("bonus-indicator");
+    const flash = document.getElementById("flash");
+    const gameTimerDisplay = document.getElementById("game-timer");
+    const loginBtn = document.getElementById("loginBtn");
+    const profileBtn = document.getElementById("profileBtn");
+    const failSound = new Audio('sounds/fail.mp3');
+    const succesSound = new Audio('sounds/succes.mp3');
+    const waveSound = new Audio('sounds/next-wave.mp3');
+    const username = localStorage.getItem('username');
+    const achievementQueue = [];
+
+    function startGameTimer() {
+      clearInterval(gameInterval);
+      gameInterval = setInterval(() => {
+        gameTime--;
+        const minutes = Math.floor(gameTime / 60);
+        const seconds = gameTime % 60;
+        gameTimerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        if (gameTime <= 0) {
+          clearInterval(gameInterval);
+          clearTimeout(gameTimeout);
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function getRandomWord() {
+      const { minLen, maxLen } = getLengthRangeByWave(wave);
+      const targetLengths = Array.from(lengthIndexMap.keys()).filter(len => len >= minLen && len <= maxLen);
+      if (targetLengths.length === 0) return "default";
+      const randomLen = targetLengths[Math.floor(Math.random() * targetLengths.length)];
+      const { start, end } = lengthIndexMap.get(randomLen);
+      const randomIndex = Math.floor(Math.random() * (end - start + 1)) + start;
+      return words[randomIndex];
+    }
+
+    function getLengthRangeByWave(wave) {
+      const minLen = Math.min(2 + wave, 7);
+      const maxLen = Math.min(5 + wave, 12);
+      return { minLen, maxLen };
+    }
+
+    function showNewWord() {
+      if (!gameTimeout) {
+        gameTimeout = setTimeout(endGame, gameDuration);
+      }
+      currentWord = getRandomWord();
+      wordElement.textContent = currentWord;
+      input.value = "";
+      timerBar.style.transition = "none";
+      timerBar.style.width = "100%";
+      void timerBar.offsetWidth;
+      timerBar.style.transition = `width ${timeLimit}ms linear`;
+      timerBar.style.width = "0%";
+      if (wordTimer) clearTimeout(wordTimer);
+      wordTimer = setTimeout(() => {
+        score = Math.max(0, score - 1);
+        inARow = 0;
+        updateBonusIndicator();
+        failSound.play();
+        scoreElement.textContent = score;
+        showNewWord();
+      }, timeLimit);
+    }
+
+    input.addEventListener("input", () => {
+      if (input.value === currentWord) {
+        clearTimeout(wordTimer);
+        inARow++;
+        const bonus = getBonusMultiplier(inARow);
+        score += bonus;
+        updateBonusIndicator();
+        wordsThisWave++;
+        updateProgressBar();
+        scoreElement.textContent = score;
+        if (wordsThisWave >= wordsRequired) {
+          nextWave();
+        } else {
+          showNewWord();
+        }
+        succesSound.play();
+      }
+    });
+
+    function animateWaveBanner() {
+      const banner = document.getElementById("wave-banner");
+      banner.style.opacity = 1;
+      banner.style.transform = "translateX(-50%) scale(1.2)";
+      typeOut(`🌊 Wave ${wave}!`, banner, 60);
+      setTimeout(() => {
+        banner.style.opacity = 0;
+        banner.style.transform = "translateX(-50%) scale(1)";
+      }, 2000);
+    }
+
+    function updateProgressBar() {
+      const percent = (wordsThisWave / wordsRequired) * 100;
+      progressBar.style.width = `${Math.min(percent, 100)}%`;
+    }
+
+    function updateBonusIndicator() {
+      const bonus = getBonusMultiplier(inARow);
+      if (bonus > 1) {
+        bonusIndicator.textContent = "🔥".repeat(bonus - 1) + ` x${bonus} Bonus!`;
+        bonusIndicator.style.opacity = 1;
+        if (bonus > lastBonusLevel) {
+          triggerFlash();
+          lastBonusLevel = bonus;
+        }
+        bonusIndicator.classList.add("bonus-pop");
+        setTimeout(() => bonusIndicator.classList.remove("bonus-pop"), 200);
+      } else {
+        bonusIndicator.textContent = "";
+        bonusIndicator.style.opacity = 0;
+        lastBonusLevel = 1;
+      }
+    }
+
+    function getBonusMultiplier(inARow) {
+      if (inARow >= 15) return 4;
+      if (inARow >= 10) return 3;
+      if (inARow >= 5) return 2;
+      return 1;
+    }
+
+    function triggerFlash() {
+      flash.style.opacity = "1";
+      setTimeout(() => {
+        flash.style.opacity = "0";
+      }, 400);
+    }
+
+    function typeOut(text, element, delay = 50) {
+      element.textContent = "";
+      let index = 0;
+      element.classList.add("typing-text");
+      const typingInterval = setInterval(() => {
+        if (index < text.length) {
+          element.textContent += text[index];
+          index++;
+        } else {
+          clearInterval(typingInterval);
+          element.classList.remove("typing-text");
+        }
+      }, delay);
+    }
+
+    function nextWave() {
+      wave++;
+      wordsThisWave = 0;
+      wordsRequired += 2;
+      updateProgressBar();
+      waveElement.textContent = `Wave: ${wave}`;
+      animateWaveBanner();
+      waveSound.play();
+      if (wave % 3 === 0 && timeLimit > 1000) {
+        timeLimit -= 500;
+      }
+      showNewWord();
+    }
+
+    function endGame() {
+      if (gameEnded) return;
+        gameEnded = true;
+      clearTimeout(wordTimer);
+      input.disabled = true;
+      document.getElementById("final-score").textContent = score;
+      document.getElementById("final-wave").textContent = wave;
+      document.getElementById("end-screen").classList.remove("hidden");
+      saveGameHistory(score, wave);
+      handleStatsAndAchievements(score, wave);
+    }
+
+    function restartGame() {
+      gameEnded = false;
+      score = 0;
+      wave = 1;
+      timeLimit = 5000;
+      wordsThisWave = 0;
+      wordsRequired = 5;
+      inARow = 0;
+      lastBonusLevel = 1;
+      gameTime = 180;
+      let typedCharacters = 0;
+
+      clearTimeout(wordTimer);
+      clearTimeout(gameTimeout);
+      clearInterval(gameInterval);
+
+      startGameTimer();
+      gameTimeout = setTimeout(endGame, gameDuration);
+
+      input.disabled = false;
+      input.value = "";
+      input.focus();
+      scoreElement.textContent = score;
+      waveElement.textContent = `Wave: ${wave}`;
+      bonusIndicator.textContent = "";
+      bonusIndicator.style.opacity = 0;
+      progressBar.style.width = "0%";
+      document.getElementById("end-screen").classList.add("hidden");
+
+      showNewWord();
+    }
+
+    function goToMain() {
+      window.location.href = "../../index.html";
+    }
+
+    function saveGameHistory(score, wave) {
+      if (!username) return;
+      console.log('Saving stats:', username,score, wave);
+      const data = {
+        username,
+        mode: "Words-mode",
+        datetime: new Date().toISOString(),
+        stats: {
+          score,
+          wave
+        }
+      };
+
+      fetch('http://localhost:3000/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(res => {
+        if (!res.ok) throw new Error("Ошибка при сохранении истории");
+        return res.json();
+      }).then(data => {
+        console.log("История игры сохранена:", data);
+      }).catch(err => console.error(err));
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+        typedCharacters++;
+      }
+    });
+
+
+    async function fetchAndCheckAchievements(score, wave) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/stats?username=${username}`);
+        const stats = await res.json();
+        const totalChars = stats.totalTypedCharacters || 0;
+
+        console.log("total chars  " + totalChars);
+
+        const unlocked = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+        const newUnlocked = [...unlocked];
+
+        const achievements = [];
+
+        if (totalChars >= 1000 && !unlocked.includes('1000chars')) {  
+          achievements.push({ key: '1000chars', icon: 'medal-bronze.png', text: 'Первые 1000 символов' });
+        }
+        if (totalChars >= 5000 && !unlocked.includes('5000chars')) {
+          achievements.push({ key: '5000chars', icon: 'medal-silver.png', text: '5000 символов' });
+        }
+        if (totalChars >= 10000 && !unlocked.includes('10000chars')) {
+          achievements.push({ key: '10000chars', icon: 'medal-gold.png', text: '10000 символов' });
+        }
+        if (score >= 300 && !unlocked.includes('300score')) {
+          achievements.push({ key: '300score', icon: 'medal-gold.png', text: '10000 символов' });
+        }
+        if (wave >= 8 && !unlocked.includes('8wave')) {
+          achievements.push({ key: '8wave', icon: 'wave2.png', text: '10000 символов' });
+        }
+
+        achievements.forEach(a => {
+          queueAchievement(a.icon, a.text);
+          newUnlocked.push(a.key);
+        });
+
+        if (achievements.length > 0) {
+          localStorage.setItem('unlockedAchievements', JSON.stringify(newUnlocked));
+        }
+      } catch (err) {
+        console.error('Ошибка при получении статистики:', err);
+      }
+    }
+
+    function processAchievementQueue() {
+      if (achievementQueue.length === 0) {
+        isPopupShowing = false;
+        return;
+      }
+
+      isPopupShowing = true;
+      const { icon, text } = achievementQueue.shift();
+
+      const popup = document.getElementById('achievementPopup');
+      const popupIcon = document.getElementById('achievementIcon');
+      const popupText = document.getElementById('achievementText');
+
+      if (!popup || !popupIcon || !popupText) return;
+
+      popupIcon.src = `/icons/${icon}`;
+      popupText.textContent = text;
+
+      popup.classList.remove('hidden');
+      popup.classList.add('show');
+
+      setTimeout(() => {
+        popup.classList.remove('show');
+        popup.classList.add('hidden');
+
+        setTimeout(processAchievementQueue, 500); // задержка перед следующим
+      }, 3000);
+    }
+
+    function queueAchievement(icon, text) {
+      achievementQueue.push({ icon, text });
+      if (!isPopupShowing) {
+        processAchievementQueue();
+      }
+    }
+
+    async function handleStatsAndAchievements(score, wave) {
+      if (username && typedCharacters > 0) {
+        console.log("Typed characters:" + typedCharacters);
+        try {
+          // Ждём, пока сервер обновит статистику
+          await fetch('/api/stats/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username,
+              typedCharacters
+            })
+          });
+
+          // Только после обновления — проверяем достижения
+          await fetchAndCheckAchievements(score, wave);
+        } catch (err) {
+          console.error('Ошибка при обновлении статистики:', err);
+        }
+      }
+    }
+
+    window.onload = () => {
+      const username = localStorage.getItem('username');
+      if (username) {
+        loginBtn.classList.add('hidden');
+        profileBtn.classList.remove('hidden');
+        profileBtn.textContent = `Профиль (${username})`;
+        profileBtn.href = '../../profile.html';
+      }
+      showNewWord();
+      startGameTimer();
+    };
+  </script>
+</body>
+</html>
